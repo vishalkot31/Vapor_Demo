@@ -1,4 +1,6 @@
 import Vapor
+import Fluent
+import FluentSQLiteDriver
 
 // configures your application
 public func configure(_ app: Application) async throws {
@@ -14,6 +16,12 @@ public func configure(_ app: Application) async throws {
     else{
         app.http.server.configuration.port = 8080
     }
+    //DataBase Setup
+    app.databases.use(.sqlite(.file(app.directory.workingDirectory + "db.sqlite")), as: .sqlite)
+    // 2️⃣ Add migration
+    app.migrations.add(CreateUser())
+    // 3️⃣ Run migrations automatically
+    try await app.autoMigrate().get()
    
     try routes(app)
 }
